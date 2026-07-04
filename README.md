@@ -15,8 +15,15 @@ optional self-hosted apps you can pick during installation.
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nuroso000/ubuntu-server-setup/main/setup.sh | sudo bash
+curl -fsSL -o /tmp/setup.sh https://raw.githubusercontent.com/nuroso000/ubuntu-server-setup/main/setup.sh && sudo bash /tmp/setup.sh
 ```
+
+This downloads the script first and then runs it, instead of piping it
+directly into `sudo bash`. Piping straight into `sudo bash` looks like a single
+command too, but it silently swallows the `sudo` password prompt and can
+break the interactive menus on some terminals/SSH clients, which looks like
+the script is frozen. Download-then-run avoids both problems while still
+being one line to paste.
 
 Run it once on a fresh Ubuntu server. It walks you through a few interactive
 menus, then does everything else automatically.

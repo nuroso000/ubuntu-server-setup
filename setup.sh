@@ -11,7 +11,10 @@
 #   Plus a long list of optional self-hosted apps (multi-select).
 #
 # One-liner install (once hosted on GitHub):
-#   curl -fsSL https://raw.githubusercontent.com/<user>/<repo>/main/setup.sh | sudo bash
+#   curl -fsSL -o /tmp/setup.sh https://raw.githubusercontent.com/<user>/<repo>/main/setup.sh && sudo bash /tmp/setup.sh
+#
+# (Downloading first, then running, avoids sudo swallowing the password
+#  prompt and the interactive menus breaking under `curl | sudo bash`.)
 #
 # Local run:
 #   sudo bash setup.sh
