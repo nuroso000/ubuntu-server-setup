@@ -198,7 +198,13 @@ mkdir -p "${BASE_DIR}" "${HOMEPAGE_CFG}"
 [[ "${DNS_BLOCKER}"   == "ADGUARD"    ]] && mkdir -p "${BASE_DIR}/adguard/work" "${BASE_DIR}/adguard/conf"
 
 ${WITH_NEXTCLOUD}   && mkdir -p "${BASE_DIR}/nextcloud/html" "${BASE_DIR}/nextcloud/db"
-${WITH_OPENCLAW}    && mkdir -p "${BASE_DIR}/openclaw/config" "${BASE_DIR}/openclaw/workspace" "${BASE_DIR}/openclaw/secrets"
+if ${WITH_OPENCLAW}; then
+  mkdir -p "${BASE_DIR}/openclaw/config" "${BASE_DIR}/openclaw/workspace" "${BASE_DIR}/openclaw/secrets"
+  # The openclaw image runs as the non-root "node" user (uid/gid 1000), so the
+  # bind-mounted host directories (created here as root) must be owned by it,
+  # otherwise the container fails with EACCES on startup.
+  chown -R 1000:1000 "${BASE_DIR}/openclaw"
+fi
 ${WITH_VAULTWARDEN} && mkdir -p "${BASE_DIR}/vaultwarden"
 ${WITH_GITEA}       && mkdir -p "${BASE_DIR}/gitea/data" "${BASE_DIR}/gitea/config"
 ${WITH_N8N}         && mkdir -p "${BASE_DIR}/n8n"
