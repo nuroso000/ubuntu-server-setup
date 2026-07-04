@@ -864,11 +864,14 @@ if ${WITH_OPENCLAW}; then
   echo "==> OpenClaw needs a one-time terminal onboarding (API key, etc.)."
   echo "    Stopping the background container and running it interactively..."
   docker compose stop openclaw >/dev/null 2>&1 || true
-  if docker compose run --rm -it openclaw onboard; then
-    echo "==> OpenClaw onboarding complete, starting it in the background"
+  # The image's default command is `openclaw` (no args); `compose run <svc> <args>`
+  # replaces that command entirely, so the binary name must be repeated here --
+  # otherwise the container tries to exec "setup" as a standalone program.
+  if docker compose run --rm -it openclaw openclaw setup; then
+    echo "==> OpenClaw setup complete, starting it in the background"
   else
-    echo "==> OpenClaw onboarding did not finish cleanly. You can re-run it any time with:"
-    echo "      cd ${BASE_DIR} && docker compose run --rm -it openclaw onboard"
+    echo "==> OpenClaw setup did not finish cleanly. You can re-run it any time with:"
+    echo "      cd ${BASE_DIR} && docker compose run --rm -it openclaw openclaw setup"
   fi
   docker compose up -d openclaw
 fi
