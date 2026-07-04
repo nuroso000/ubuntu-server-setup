@@ -849,6 +849,30 @@ echo "==> Starting containers"
 cd "${BASE_DIR}"
 docker compose up -d
 
+# ---------------------------------------------------------------------------
+# Post-install interactive onboarding
+#
+# Some apps refuse to serve their web UI until you've walked through a
+# terminal-based setup wizard once (API keys, admin account, etc.). Run those
+# wizards right here, right after `docker compose up -d`, so the app is ready
+# to use as soon as the script finishes instead of forcing a manual
+# `docker compose run` afterwards. Add further apps to this section the same
+# way if they need it.
+# ---------------------------------------------------------------------------
+if ${WITH_OPENCLAW}; then
+  echo
+  echo "==> OpenClaw needs a one-time terminal onboarding (API key, etc.)."
+  echo "    Stopping the background container and running it interactively..."
+  docker compose stop openclaw >/dev/null 2>&1 || true
+  if docker compose run --rm -it openclaw onboard; then
+    echo "==> OpenClaw onboarding complete, starting it in the background"
+  else
+    echo "==> OpenClaw onboarding did not finish cleanly. You can re-run it any time with:"
+    echo "      cd ${BASE_DIR} && docker compose run --rm -it openclaw onboard"
+  fi
+  docker compose up -d openclaw
+fi
+
 echo
 echo "============================================================"
 echo " Setup complete!"
