@@ -18,6 +18,13 @@
 #
 set -euo pipefail
 
+# When run as `curl ... | sudo bash`, stdin is the pipe carrying this script's
+# source, not the terminal -- so interactive prompts (whiptail) can't read
+# keypresses. Reattach stdin to the controlling terminal so menus work.
+if [[ -r /dev/tty ]]; then
+  exec < /dev/tty
+fi
+
 BASE_DIR="/opt/homelab"
 COMPOSE_FILE="${BASE_DIR}/docker-compose.yml"
 HOMEPAGE_CFG="${BASE_DIR}/homepage/config"
